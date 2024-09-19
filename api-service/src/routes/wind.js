@@ -12,13 +12,10 @@ router.get('/wind', async (req, res) => {
     }
 
     if (req.query.state) {
-      query.state = req.query.state.toUpperCase;
+      query.state = req.query.state.toUpperCase();
     }
 
     const stormData = await getStormData(query);
-    if (stormData.length === 0) {
-      return res.status(404).json({ message: 'No data found for the specified query.' });
-    }
 
     logger.info(`API request: /wind?date=${req.query.date}&state=${req.query.state}`);
 
