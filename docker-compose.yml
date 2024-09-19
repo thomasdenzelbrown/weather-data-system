@@ -26,7 +26,7 @@ services:
   data-collection-service:
     build: ./data-collection-service
     environment:
-      - CSV_URL=https://www.spc.noaa.gov/climo/reports/yesterday_wind.csv
+      - CSV_URL=https://www.spc.noaa.gov/climo/reports/240917_rpts_wind.csv
       - KAFKA_BROKER=kafka:9092
       - RAW_TOPIC=raw-wind-data
     depends_on:
@@ -45,6 +45,8 @@ services:
   api-service:
     build: ./api-service
     environment:
+      - KAFKA_BROKER=kafka:9092
+      - TRANSFORMED_TOPIC=transformed-wind-data
       - MONGO_URI=mongodb://mongodb:27017/windData
       - MONGO_DB_NAME=windData
       - PORT=3000

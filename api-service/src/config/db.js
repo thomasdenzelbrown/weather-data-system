@@ -1,27 +1,24 @@
 require('dotenv').config();
-
 const { MongoClient } = require('mongodb');
-
-const MONGO_URI = process.env.MONGO_URI;
-const MONGO_DB_NAME = process.env.MONGO_DB_NAME;
+const logger = require('../services/logger');
 
 let db = null;
 
 async function connectToMongoDB() {
   try {
-    const client = new MongoClient(MONGO_URI, { useUnifiedTopology: true });
+    const client = new MongoClient(process.env.MONGO_URI, { useUnifiedTopology: true });
     await client.connect();
-    db = client.db(MONGO_DB_NAME);
-    console.log(`Connected to MongoDB: ${MONGO_DB_NAME}`);
+    db = client.db(process.env.MONGO_DB_NAME);
+    logger.info(`Connected to MongoDB: ${process.env.MONGO_DB_NAME}`);
   } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
+    logger.error('Failed to connect to MongoDB:', error);
     throw error;
   }
 }
 
 function getDB() {
   if (!db) {
-    throw new Error('MongoDB not connected');
+    throw new Error('Database not connected');
   }
   return db;
 }

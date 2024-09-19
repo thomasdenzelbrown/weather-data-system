@@ -1,24 +1,31 @@
 const express = require('express');
-const { getWindData } = require('../services/mongoService');
+const { getStormData } = require('../services/mongoService');
+const logger = require('../services/logger');
 const router = express.Router();
 
 router.get('/wind', async (req, res) => {
   try {
     const query = {};
-    if (req.query.location) query.location = req.query.location;
-    if (req.query.date) query.time = req.query.date;
-    if (req.query.severity) query.severity = req.query.severity;
 
-    const windData = await getWindData(query);
-
-    if (windData.length === 0) {
-      return res.status(404).json({ message: 'No data found' });
+    if (req.query.date) {
+      query.date = req.query.date;
     }
 
-    res.json(windData);
+    if (req.query.location) {
+      query.location = req.query.location;
+    }
+
+    const stormData = await getStormData(query);
+    if (stormData.length === 0) {
+      return res.status(404).json({ message: 'No data found for the specified query.' });
+    }
+
+    logger.info(`API request: /wind?date=${req.query.date}&location=${req.query.location}`);
+
+    res.json(stormData);
   } catch (error) {
-    console.error('Error fetching wind data:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    logger.error('Error in API request:', error);
+    res.status(500).json({ message: 'Internal server error.' });
   }
 });
 

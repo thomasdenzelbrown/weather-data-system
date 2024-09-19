@@ -1,11 +1,11 @@
 const { getDB } = require('../config/db');
 
-async function getWindData(query) {
+async function getStormData(query) {
   const db = getDB();
-  const collection = db.collection('windReports');
+  const collection = db.collection('stormReports');
 
-  const windData = await collection.find(query).toArray();
-  return windData;
+  const stormData = await collection.find(query).toArray();
+  return stormData;
 }
 
-module.exports = { getWindData };
+module.exports = { getStormData };
