@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const { connectToMongoDB } = require('./config/db');
 const { initializeKafkaConsumer } = require('./services/kafkaConsumer');
 const windRoutes = require('./routes/wind');
@@ -7,6 +8,12 @@ const logger = require('./services/logger');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 app.use(express.json());
 
