@@ -1,0 +1,8 @@
+kafka:
+  brokers:
+    - "kafka:9092"
+  groupID: "etl-group"
+  topics:
+    raw: "raw-weather-reports"
+    transformed: "transformed-weather-data"
+    
