@@ -53,3 +53,5 @@ services:
     depends_on:
       - kafka
       - mongodb
+    ports:
+      - "3000:3000"
