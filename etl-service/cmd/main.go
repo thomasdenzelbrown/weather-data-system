@@ -8,7 +8,6 @@ import (
 func main() {
 	log.Println("Starting ETL service...")
 
-	// Start Kafka consumer
 	err := pkg.StartKafkaConsumer()
 	if err != nil {
 		log.Fatalf("Failed to start Kafka consumer: %v", err)

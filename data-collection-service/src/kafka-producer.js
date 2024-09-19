@@ -1,7 +1,7 @@
 const kafka = require('kafka-node');
 const logger = require('./logger');
 
-const client = new kafka.KafkaClient({ kafkaHost: 'localhost:9092' });
+const client = new kafka.KafkaClient({ kafkaHost: 'kafka:9092' });
 const producer = new kafka.Producer(client);
 
 async function publishToKafka(data) {

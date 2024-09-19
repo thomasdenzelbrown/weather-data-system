@@ -9,7 +9,6 @@ import (
 )
 
 func StartKafkaConsumer() error {
-	// Create a new Kafka consumer
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": "kafka:9092",
 		"group.id":          "etl-group",
@@ -20,23 +19,31 @@ func StartKafkaConsumer() error {
 		return err
 	}
 
-	// Subscribe to the raw-weather-reports topic
-	consumer.Subscribe("raw-weather-reports", nil)
+	consumer.Subscribe("raw-wind-data", nil)
 
-	// Start consuming messages
 	for {
 		msg, err := consumer.ReadMessage(-1)
 		if err == nil {
-			var rawData map[string]interface{}
+			if len(msg.Value) == 0 {
+				log.Println("Received empty message, skipping processing.")
+				continue
+			}
+
+			var rawData []map[string]interface{}
 			json.Unmarshal(msg.Value, &rawData)
 
-			// Process the raw data using the transformation logic
-			transformedData := ProcessRawData(rawData)
+			if len(rawData) == 0 {
+				log.Println("No wind data to process (empty message), skipping.")
+				continue
+			}
 
-			// Publish the transformed data to the Kafka topic
-			err := PublishTransformedData(transformedData)
-			if err != nil {
-				log.Println("Failed to publish transformed data:", err)
+			for _, data := range rawData {
+				transformedData := ProcessRawData(data)
+
+				err := PublishTransformedData(transformedData)
+				if err != nil {
+					log.Println("Failed to publish transformed data:", err)
+				}
 			}
 		} else {
 			fmt.Printf("Error consuming message: %v (%v)\n", err, msg)

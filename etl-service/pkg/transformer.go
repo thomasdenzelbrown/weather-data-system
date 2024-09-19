@@ -2,25 +2,42 @@ package pkg
 
 import (
 	"log"
+	"strconv"
+	"strings"
 )
 
 func ProcessRawData(rawData map[string]interface{}) map[string]interface{} {
-	// Example transformation logic
-	log.Println("Transforming raw data...")
+	log.Println("Transforming raw wind data...")
 
-	log.Println("Raw data: %+v\n", rawData)
+	time := rawData["Time"].(string)
+	speed := rawData["Speed"].(string)
+	location := rawData["Location"].(string)
+	county := rawData["County"].(string)
+	state := rawData["State"].(string)
+	lat := rawData["Lat"].(string)
+	lon := rawData["Lon"].(string)
+	comments := rawData["Comments"].(string)
 
-	// Extract fields (adjust based on actual raw data structure)
-	location := rawData["location"]
-	time := rawData["time"]
-	stormType := rawData["type"]
+	var parsedSpeed int
+	if strings.ToUpper(speed) == "UNK" {
+		parsedSpeed = 0
+	} else {
+		parsedSpeed, _ = strconv.Atoi(speed)
+	}
 
-	// Perform transformation and add enriched data (example: adding a new field)
+	parsedLat, _ := strconv.ParseFloat(lat, 64)
+	parsedLon, _ := strconv.ParseFloat(lon, 64)
+
 	transformedData := map[string]interface{}{
-		"location":   location,
-		"time":       time,
-		"storm_type": stormType,
-		"severity":   determineSeverity(stormType),
+		"time":      time,
+		"speed":     parsedSpeed,
+		"location":  location,
+		"county":    county,
+		"state":     state,
+		"latitude":  parsedLat,
+		"longitude": parsedLon,
+		"comments":  comments,
+		"severity":  determineSeverity(parsedSpeed),
 	}
 
 	log.Printf("Transformed data: %+v\n", transformedData)
@@ -28,16 +45,14 @@ func ProcessRawData(rawData map[string]interface{}) map[string]interface{} {
 	return transformedData
 }
 
-func determineSeverity(stormType interface{}) string {
-	// Basic example of determining storm severity based on storm type
-	switch stormType {
-	case "Tornado":
+func determineSeverity(speed int) string {
+	if speed >= 60 {
 		return "High"
-	case "Thunderstorm":
+	} else if speed >= 30 {
 		return "Medium"
-	case "Rain":
+	} else if speed > 0 {
 		return "Low"
-	default:
+	} else {
 		return "Unknown"
 	}
 }
