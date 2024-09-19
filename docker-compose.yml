@@ -49,6 +49,7 @@ services:
       - TRANSFORMED_TOPIC=transformed-wind-data
       - MONGO_URI=mongodb://mongodb:27017/windData
       - MONGO_DB_NAME=windData
+      - CORS_ORIGIN=http://localhost:8000
       - PORT=3000
     depends_on:
       - kafka

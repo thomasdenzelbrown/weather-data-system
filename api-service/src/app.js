@@ -8,9 +8,10 @@ const logger = require('./services/logger');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const CORS_ORIGIN = process.env.CORS_ORIGIN;
 
 app.use(cors({
-  origin: '*',
+  origin: CORS_ORIGIN,
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
