@@ -25,11 +25,20 @@ services:
 
   data-collection-service:
     build: ./data-collection-service
+    environment:
+      - CSV_URL=https://www.spc.noaa.gov/climo/reports/yesterday_wind.csv
+      - KAFKA_BROKER=kafka:9092
+      - RAW_TOPIC=raw-wind-data
     depends_on:
       - kafka
 
   etl-service:
     build: ./etl-service
+    environment:
+      - KAFKA_BROKER=kafka:9092
+      - RAW_TOPIC=raw-wind-data
+      - TRANSFORMED_TOPIC=transformed-wind-data
+      - KAFKA_CONSUMER_GROUP=etl-group
     depends_on:
       - kafka
 

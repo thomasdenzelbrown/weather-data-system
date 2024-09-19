@@ -1,9 +1,11 @@
+require('dotenv').config();
+
 const axios = require('axios');
 const csv = require('csv-parser');
 const logger = require('./logger');
 const { Readable } = require('stream');
 
-const CSV_URL = 'https://www.spc.noaa.gov/climo/reports/yesterday_wind.csv';
+const CSV_URL = process.env.CSV_URL;
 
 async function fetchWindData() {
   try {

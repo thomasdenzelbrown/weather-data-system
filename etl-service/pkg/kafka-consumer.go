@@ -4,14 +4,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
 func StartKafkaConsumer() error {
+	kafkaBroker := os.Getenv("KAFKA_BROKER")
+	rawTopic := os.Getenv("RAW_TOPIC")
+	consumerGroup := os.Getenv("KAFKA_CONSUMER_GROUP")
+
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers": "kafka:9092",
-		"group.id":          "etl-group",
+		"bootstrap.servers": kafkaBroker,
+		"group.id":          consumerGroup,
 		"auto.offset.reset": "earliest",
 	})
 
@@ -19,7 +24,7 @@ func StartKafkaConsumer() error {
 		return err
 	}
 
-	consumer.Subscribe("raw-wind-data", nil)
+	consumer.Subscribe(rawTopic, nil)
 
 	for {
 		msg, err := consumer.ReadMessage(-1)

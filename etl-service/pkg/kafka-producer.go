@@ -3,13 +3,17 @@ package pkg
 import (
 	"encoding/json"
 	"log"
+	"os"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
 func PublishTransformedData(data map[string]interface{}) error {
+	kafkaBroker := os.Getenv("KAFKA_BROKER")
+	transformedTopic := os.Getenv("TRANSFORMED_TOPIC")
+
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{
-		"bootstrap.servers": "kafka:9092",
+		"bootstrap.servers": kafkaBroker,
 	})
 
 	if err != nil {
@@ -21,7 +25,7 @@ func PublishTransformedData(data map[string]interface{}) error {
 		return err
 	}
 
-	topic := "transformed-weather-data"
+	topic := transformedTopic
 	producer.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
 		Value:          jsonData,
