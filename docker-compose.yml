@@ -44,6 +44,10 @@ services:
 
   api-service:
     build: ./api-service
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/windData
+      - MONGO_DB_NAME=windData
+      - PORT=3000
     depends_on:
       - kafka
       - mongodb
