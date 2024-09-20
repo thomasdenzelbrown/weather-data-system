@@ -29,6 +29,7 @@ services:
       - CSV_URL=https://www.spc.noaa.gov/climo/reports/240917_rpts_wind.csv
       - KAFKA_BROKER=kafka:9092
       - RAW_TOPIC=raw-wind-data
+      - BATCH_SIZE=3
     depends_on:
       - kafka
 

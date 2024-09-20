@@ -7,18 +7,21 @@ const KAFKA_BROKER = process.env.KAFKA_BROKER;
 const RAW_TOPIC = process.env.RAW_TOPIC;
 
 const client = new kafka.KafkaClient({ kafkaHost: KAFKA_BROKER });
-const producer = new kafka.Producer(client);
+const producer = new kafka.Producer(client, { requireAcks: 1 });
 
-async function publishToKafka(data) {
+async function publishToKafka(batch) {
   return new Promise((resolve, reject) => {
-    const payloads = [{ topic: RAW_TOPIC, messages: JSON.stringify(data) }];
+    const payloads = batch.map(row => ({
+      topic: RAW_TOPIC,
+      messages: JSON.stringify(row),
+    }));
 
     producer.send(payloads, (err, data) => {
       if (err) {
         logger.error('Error publishing data to Kafka:', err);
         return reject(err);
       }
-      logger.info('Data published to Kafka:', data);
+      logger.info('Data successfully published to Kafka:');
       resolve(data);
     });
   });

@@ -1,23 +1,31 @@
-const { fetchWindData } = require('./fetcher');
-const { publishToKafka } = require('./kafka-producer');
+require('dotenv').config();
+const cron = require('node-cron');
+const { fetchAndProcessCSV } = require('./fetcher');
 const logger = require('./logger');
 
-async function run() {
+function handleShutdown() {
+  logger.info('Received shutdown signal. Closing resources and exiting...');
+  process.exit(0);
+}
+
+async function runDataFetchJob() {
   try {
-    logger.info('Starting data collection service...');
+    logger.info('Fetching data from NOAA...');
+    
+    await fetchAndProcessCSV();
 
-    const windData = await fetchWindData();
-
-    if (!windData) {
-      logger.warn('No data to publish, skipping Kafka publication.');
-      return;
-    }
-
-    await publishToKafka(windData);
-    logger.info('Wind data successfully published to Kafka.');
+    logger.info('Data fetching and processing completed successfully.');
   } catch (error) {
-    logger.error('Error in data collection process:', error);
+    logger.error('Error in Data Collection Service:', error);
   }
 }
 
-run();
+cron.schedule('0 8,14,20 * * *', () => {
+  logger.info('Scheduled job started: Fetching data...');
+  runDataFetchJob();
+});
+
+runDataFetchJob();
+
+process.on('SIGTERM', handleShutdown);
+process.on('SIGINT', handleShutdown);
